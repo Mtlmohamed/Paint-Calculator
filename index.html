@@ -1,98 +1,160 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-    animation: fadeIn 2s;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paint Ingredient Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Paint Ingredient Calculator</h1>
+        <form id="paintForm">
+            <fieldset>
+                <legend>Current Formula</legend>
+                <div id="currentFormulaContainer"></div>
+                <button type="button" onclick="addFormula('current')">Add Colorant</button>
+            </fieldset>
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+            <fieldset>
+                <legend>Destination Formula</legend>
+                <div id="destinationFormulaContainer"></div>
+                <button type="button" onclick="addFormula('destination')">Add Colorant</button>
+            </fieldset>
 
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, #1159A8 0%, #F43926 100%);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    animation: slideIn 1s ease-out;
-}
+            <button type="button" onclick="calculateDifference()">Calculate Difference</button>
+        </form>
 
-@keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+        <div id="result"></div>
+    </div>
 
-h1, h2, h3 {
-    text-align: center;
-    color: #fff;
-    margin: 10px 0;
-}
+    <script>
+        let currentFormulaCount = 0;
+        let destinationFormulaCount = 0;
 
-form {
-    margin-bottom: 20px;
-}
+        // Add formula section based on type (current/destination)
+        function addFormula(type) {
+            const container = document.getElementById(`${type}FormulaContainer`);
+            const newFormula = createFormulaSection(type, window[`${type}FormulaCount`]);
+            container.appendChild(newFormula);
+            window[`${type}FormulaCount`]++;
+        }
 
-.formula {
-    margin-bottom: 20px;
-    animation: fadeIn 1s ease-in-out;
-}
+        // Create formula section for colorant input
+        function createFormulaSection(type, index) {
+            const formulaDiv = document.createElement('div');
+            formulaDiv.classList.add('formula');
+            formulaDiv.id = `${type}Formula${index}`;
+            formulaDiv.innerHTML = `
+                <div class="row">
+                    <label for="${type}Colorant${index}">Choose Color name:</label>
+                    <select id="${type}Colorant${index}" name="${type}Colorant${index}">
+                        <option value="B1">B1 (Black)</option>
+                        <option value="R4">R4 (New Red)</option>
+                        <option value="Y1">Y1 (Yellow)</option>
+                        <option value="Y3">Y3 (Deep Gold)</option>
+                        <option value="W1">W1 (White)</option>
+                        <option value="N1">N1 (Raw Amber)</option>
+                        <option value="R2">R2 (Maroon)</option>
+                        <option value="L1">L1 (Blue)</option>
+                        <option value="G2">G2 (New Green)</option>
+                        <option value="R3">R3 (Magenta)</option>
+                    </select>
+                </div>
+                <table>
+                    <tr>
+                        <th>OZ</th>
+                        <th>32</th>
+                        <th>64</th>
+                        <th>128</th>
+                    </tr>
+                    <tr>
+                        <td><input type="number" id="${type}OZ${index}" name="${type}OZ${index}" max="32"></td>
+                        <td><input type="number" id="${type}32${index}" name="${type}32${index}" max="32"></td>
+                        <td><input type="number" id="${type}64${index}" name="${type}64${index}" max="2"></td>
+                        <td><input type="number" id="${type}128${index}" name="${type}128${index}" max="4"></td>
+                    </tr>
+                </table>
+            `;
+            return formulaDiv;
+        }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
+        // Get formulas for a type (current/destination)
+        function getFormulas(type) {
+            let formulas = {};
+            let count = (type === 'current') ? currentFormulaCount : destinationFormulaCount;
 
-label {
-    flex-basis: 30%;
-    color: #fff;
-}
+            for (let i = 0; i < count; i++) {
+                let color = document.getElementById(`${type}Colorant${i}`).value;
+                let OZ = parseInt(document.getElementById(`${type}OZ${i}`).value) || 0;
+                let d32 = parseInt(document.getElementById(`${type}32${i}`).value) || 0;
+                let d64 = parseInt(document.getElementById(`${type}64${i}`).value) || 0;
+                let d128 = parseInt(document.getElementById(`${type}128${i}`).value) || 0;
 
-input, select {
-    flex-basis: 65%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s;
-}
+                formulas[color] = { OZ, 32: d32, 64: d64, 128: d128 };
+            }
 
-input:focus, select:focus {
-    border-color: #F43926;
-}
+            return formulas;
+        }
 
-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background: linear-gradient(135deg, #F43926, #1159A8);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: background 0.3s;
-}
+        // Conversion functions
+        function convertTo128Units(OZ, d32, d64, d128) {
+            return (OZ * 32 * 4) + (d32 * 4) + (d64 * 2) + d128;
+        }
 
-button:hover {
-    background: White;
-    color: black;
-}
+        function convert128ToUnits(total128) {
+            let OZ = Math.floor(total128 / (32 * 4));
+            total128 %= (32 * 4);
 
-#result {
-    text-align: center;
-    margin-top: 20px;
-    color: #fff;
-    animation: fadeIn 1s;
-}
+            let d32 = Math.floor(total128 / 4);
+            total128 %= 4;
 
-h2 {
-    color: #ffffff;
-}
+            let d64 = Math.floor(total128 / 2);
+            total128 %= 2;
 
-h3 {
-    color: #fff;
-}
+            let d128 = total128;
+
+            return { OZ, 32: d32, 64: d64, 128: d128 };
+        }
+
+        // Calculate the difference between current and destination formulas
+        function calculateDifference() {
+            let resultText = '<h2>Difference</h2>';
+
+            let currentFormulas = getFormulas('current');
+            let destinationFormulas = getFormulas('destination');
+
+            for (let currentColor in currentFormulas) {
+                if (destinationFormulas.hasOwnProperty(currentColor)) {
+                    let current = currentFormulas[currentColor];
+                    let destination = destinationFormulas[currentColor];
+
+                    let currentTotal128 = convertTo128Units(current.OZ, current[32], current[64], current[128]);
+                    let destinationTotal128 = convertTo128Units(destination.OZ, destination[32], destination[64], destination[128]);
+
+                    if (destinationTotal128 >= currentTotal128) {
+                        let diff128 = destinationTotal128 - currentTotal128;
+                        let diff = convert128ToUnits(diff128);
+
+                        resultText += `
+                            <h3>${currentColor}</h3>
+                            <p>OZ: ${diff.OZ}</p>
+                            <p>32: ${diff[32]}</p>
+                            <p>64: ${diff[64]}</p>
+                            <p>128: ${diff[128]}</p>
+                            <p style="color: green;">The color is savable.</p>
+                        `;
+                    } else {
+                        resultText += `
+                            <h3>${currentColor}</h3>
+                            <p style="color: red;">This set of ingredients is not doable.</p>
+                        `;
+                    }
+                }
+            }
+
+            document.getElementById('result').innerHTML = resultText;
+        }
+    </script>
+</body>
+</html>
