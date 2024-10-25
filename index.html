@@ -84,14 +84,19 @@
             let formulas = {};
             let count = (type === 'current') ? currentFormulaCount : destinationFormulaCount;
 
+            // Iterating correctly over all inputs
             for (let i = 0; i < count; i++) {
-                let color = document.getElementById(`${type}Colorant${i}`).value;
-                let OZ = parseInt(document.getElementById(`${type}OZ${i}`).value) || 0;
-                let d32 = parseInt(document.getElementById(`${type}32${i}`).value) || 0;
-                let d64 = parseInt(document.getElementById(`${type}64${i}`).value) || 0;
-                let d128 = parseInt(document.getElementById(`${type}128${i}`).value) || 0;
+                // Check if element exists to avoid errors
+                let colorantElement = document.getElementById(`${type}Colorant${i}`);
+                if (colorantElement) {
+                    let color = colorantElement.value;
+                    let OZ = parseInt(document.getElementById(`${type}OZ${i}`).value) || 0;
+                    let d32 = parseInt(document.getElementById(`${type}32${i}`).value) || 0;
+                    let d64 = parseInt(document.getElementById(`${type}64${i}`).value) || 0;
+                    let d128 = parseInt(document.getElementById(`${type}128${i}`).value) || 0;
 
-                formulas[color] = { OZ, 32: d32, 64: d64, 128: d128 };
+                    formulas[color] = { OZ, 32: d32, 64: d64, 128: d128 };
+                }
             }
 
             return formulas;
