@@ -62,4 +62,33 @@ input, select {
 
 input:focus, select:focus {
     border-color: #F43926;
-    box-shadow: 0 0 5px rgba(244, 57, 38,
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #F43926, #1159A8);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: white;
+    color: black;
+}
+
+#result {
+    text-align: center;
+    margin-top: 20px;
+    color: #fff;
+    animation: fadeIn 1s;
+}
+
+h2, h3 {
+    color: #ffffff;
+}

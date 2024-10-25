@@ -10,37 +10,36 @@
     <div class="container">
         <h1>Paint Ingredient Calculator</h1>
         <form id="paintForm">
-            <fieldset>
-                <legend>Current Formula</legend>
-                <div id="currentFormulaContainer"></div>
-                <button type="button" onclick="addFormula('current')">Add Colorant</button>
-            </fieldset>
-
-            <fieldset>
-                <legend>Destination Formula</legend>
-                <div id="destinationFormulaContainer"></div>
-                <button type="button" onclick="addFormula('destination')">Add Colorant</button>
-            </fieldset>
+            <h2>Current Formula</h2>
+            <div id="currentFormulaContainer"></div>
+            <button type="button" onclick="addCurrentFormula()">Add Colorant</button>
+            
+            <h2>Destination Formula</h2>
+            <div id="destinationFormulaContainer"></div>
+            <button type="button" onclick="addDestinationFormula()">Add Colorant</button>
 
             <button type="button" onclick="calculateDifference()">Calculate Difference</button>
         </form>
 
-        <div id="result" aria-live="polite"></div>
+        <div id="result"></div>
     </div>
 
     <script>
         let currentFormulaCount = 0;
         let destinationFormulaCount = 0;
 
-        // Add formula section based on type (current/destination)
-        function addFormula(type) {
-            const container = document.getElementById(`${type}FormulaContainer`);
-            const newFormula = createFormulaSection(type, window[`${type}FormulaCount`]);
-            container.insertAdjacentHTML('beforeend', newFormula);
-            window[`${type}FormulaCount`]++;
+        function addCurrentFormula() {
+            const container = document.getElementById('currentFormulaContainer');
+            container.innerHTML += createFormulaSection('current', currentFormulaCount);
+            currentFormulaCount++;
         }
 
-        // Create formula section for colorant input
+        function addDestinationFormula() {
+            const container = document.getElementById('destinationFormulaContainer');
+            container.innerHTML += createFormulaSection('destination', destinationFormulaCount);
+            destinationFormulaCount++;
+        }
+
         function createFormulaSection(type, index) {
             return `
                 <div class="formula" id="${type}Formula${index}">
@@ -77,63 +76,18 @@
             `;
         }
 
-        // Get formulas for a type (current/destination)
-        function getFormulas(type) {
-            let formulas = {};
-            let count = (type === 'current') ? currentFormulaCount : destinationFormulaCount;
-
-            for (let i = 0; i < count; i++) {
-                let color = document.getElementById(`${type}Colorant${i}`).value;
-                let OZ = parseInt(document.getElementById(`${type}OZ${i}`).value) || 0;
-                let d32 = parseInt(document.getElementById(`${type}32${i}`).value) || 0;
-                let d64 = parseInt(document.getElementById(`${type}64${i}`).value) || 0;
-                let d128 = parseInt(document.getElementById(`${type}128${i}`).value) || 0;
-
-                formulas[color] = { OZ, 32: d32, 64: d64, 128: d128 };
-            }
-
-            return formulas;
-        }
-
-        // Conversion functions
-        function convertTo128Units(OZ, d32, d64, d128) {
-            return (OZ * 32 * 4) + (d32 * 4) + (d64 * 2) + d128;
-        }
-
-        function convert128ToUnits(total128) {
-            let OZ = Math.floor(total128 / (32 * 4));
-            total128 %= (32 * 4);
-
-            let d32 = Math.floor(total128 / 4);
-            total128 %= 4;
-
-            let d64 = Math.floor(total128 / 2);
-            total128 %= 2;
-
-            let d128 = total128;
-
-            return { OZ, 32: d32, 64: d64, 128: d128 };
-        }
-
-        // Calculate the difference between current and destination formulas
         function calculateDifference() {
             let resultText = '<h2>Difference</h2>';
+
             let currentFormulas = getFormulas('current');
             let destinationFormulas = getFormulas('destination');
-            let hasError = false;
 
             for (let currentColor in currentFormulas) {
                 if (destinationFormulas.hasOwnProperty(currentColor)) {
                     let current = currentFormulas[currentColor];
                     let destination = destinationFormulas[currentColor];
 
-                    // Validation to avoid empty entries
-                    if (current.OZ === 0 && current[32] === 0 && current[64] === 0 && current[128] === 0) {
-                        resultText += `<p style="color: red;">Error: Please enter valid amounts for ${currentColor}</p>`;
-                        hasError = true;
-                        continue;
-                    }
-
+                    // Convert everything to 128th units for comparison
                     let currentTotal128 = convertTo128Units(current.OZ, current[32], current[64], current[128]);
                     let destinationTotal128 = convertTo128Units(destination.OZ, destination[32], destination[64], destination[128]);
 
@@ -158,9 +112,43 @@
                 }
             }
 
-            if (!hasError) {
-                document.getElementById('result').innerHTML = resultText;
+            document.getElementById('result').innerHTML = resultText;
+        }
+
+        function getFormulas(type) {
+            let formulas = {};
+            let count = (type === 'current') ? currentFormulaCount : destinationFormulaCount;
+
+            for (let i = 0; i < count; i++) {
+                let color = document.getElementById(`${type}Colorant${i}`).value;
+                let OZ = parseInt(document.getElementById(`${type}OZ${i}`).value) || 0;
+                let d32 = parseInt(document.getElementById(`${type}32${i}`).value) || 0;
+                let d64 = parseInt(document.getElementById(`${type}64${i}`).value) || 0;
+                let d128 = parseInt(document.getElementById(`${type}128${i}`).value) || 0;
+
+                formulas[color] = { OZ, 32: d32, 64: d64, 128: d128 };
             }
+
+            return formulas;
+        }
+
+        function convertTo128Units(OZ, d32, d64, d128) {
+            return (OZ * 32 * 4) + (d32 * 4) + (d64 * 2) + d128;
+        }
+
+        function convert128ToUnits(total128) {
+            let OZ = Math.floor(total128 / (32 * 4));
+            total128 %= (32 * 4);
+
+            let d32 = Math.floor(total128 / 4);
+            total128 %= 4;
+
+            let d64 = Math.floor(total128 / 2);
+            total128 %= 2;
+
+            let d128 = total128;
+
+            return { OZ, 32: d32, 64: d64, 128: d128 };
         }
     </script>
 </body>
