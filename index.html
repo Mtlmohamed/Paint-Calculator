@@ -36,7 +36,7 @@
         function addFormula(type) {
             const container = document.getElementById(`${type}FormulaContainer`);
             const newFormula = createFormulaSection(type, window[`${type}FormulaCount`]);
-            container.appendChild(newFormula);
+            container.appendChild(newFormula);  // Append new element without overwriting
             window[`${type}FormulaCount`]++;
         }
 
