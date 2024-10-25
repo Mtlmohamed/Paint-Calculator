@@ -124,6 +124,9 @@
             let currentFormulas = getFormulas('current');
             let destinationFormulas = getFormulas('destination');
 
+            console.log('Current Formulas:', currentFormulas);
+            console.log('Destination Formulas:', destinationFormulas);
+
             for (let currentColor in currentFormulas) {
                 if (destinationFormulas.hasOwnProperty(currentColor)) {
                     let current = currentFormulas[currentColor];
@@ -150,10 +153,12 @@
                             <p style="color: red;">This set of ingredients is not doable.</p>
                         `;
                     }
+                } else {
+                    resultText += `<p style="color: red;">Color ${currentColor} not found in destination formula.</p>`;
                 }
             }
 
-            document.getElementById('result').innerHTML = resultText;
+            document.getElementById('result').innerHTML = resultText;  // Update the output area
         }
     </script>
 </body>
