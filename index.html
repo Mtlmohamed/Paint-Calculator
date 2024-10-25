@@ -42,41 +42,39 @@
 
         // Create formula section for colorant input
         function createFormulaSection(type, index) {
-            const formulaDiv = document.createElement('div');
-            formulaDiv.classList.add('formula');
-            formulaDiv.id = `${type}Formula${index}`;
-            formulaDiv.innerHTML = `
-                <div class="row">
-                    <label for="${type}Colorant${index}">Choose Color name:</label>
-                    <select id="${type}Colorant${index}" name="${type}Colorant${index}">
-                        <option value="B1">B1 (Black)</option>
-                        <option value="R4">R4 (New Red)</option>
-                        <option value="Y1">Y1 (Yellow)</option>
-                        <option value="Y3">Y3 (Deep Gold)</option>
-                        <option value="W1">W1 (White)</option>
-                        <option value="N1">N1 (Raw Amber)</option>
-                        <option value="R2">R2 (Maroon)</option>
-                        <option value="L1">L1 (Blue)</option>
-                        <option value="G2">G2 (New Green)</option>
-                        <option value="R3">R3 (Magenta)</option>
-                    </select>
+            return `
+                <div class="formula" id="${type}Formula${index}">
+                    <div class="row">
+                        <label for="${type}Colorant${index}">Choose Color name:</label>
+                        <select id="${type}Colorant${index}" name="${type}Colorant${index}">
+                            <option value="B1">B1 (Black)</option>
+                            <option value="R4">R4 (New Red)</option>
+                            <option value="Y1">Y1 (Yellow)</option>
+                            <option value="Y3">Y3 (Deep Gold)</option>
+                            <option value="W1">W1 (White)</option>
+                            <option value="N1">N1 (Raw Amber)</option>
+                            <option value="R2">R2 (Maroon)</option>
+                            <option value="L1">L1 (Blue)</option>
+                            <option value="G2">G2 (New Green)</option>
+                            <option value="R3">R3 (Magenta)</option>
+                        </select>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>OZ</th>
+                            <th>32</th>
+                            <th>64</th>
+                            <th>128</th>
+                        </tr>
+                        <tr>
+                            <td><input type="number" id="${type}OZ${index}" name="${type}OZ${index}" max="32"></td>
+                            <td><input type="number" id="${type}32${index}" name="${type}32${index}" max="32"></td>
+                            <td><input type="number" id="${type}64${index}" name="${type}64${index}" max="2"></td>
+                            <td><input type="number" id="${type}128${index}" name="${type}128${index}" max="4"></td>
+                        </tr>
+                    </table>
                 </div>
-                <table>
-                    <tr>
-                        <th>OZ</th>
-                        <th>32</th>
-                        <th>64</th>
-                        <th>128</th>
-                    </tr>
-                    <tr>
-                        <td><input type="number" id="${type}OZ${index}" name="${type}OZ${index}" max="32"></td>
-                        <td><input type="number" id="${type}32${index}" name="${type}32${index}" max="32"></td>
-                        <td><input type="number" id="${type}64${index}" name="${type}64${index}" max="2"></td>
-                        <td><input type="number" id="${type}128${index}" name="${type}128${index}" max="4"></td>
-                    </tr>
-                </table>
             `;
-            return formulaDiv;
         }
 
         // Get formulas for a type (current/destination)
