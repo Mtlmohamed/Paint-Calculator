@@ -25,7 +25,7 @@
             <button type="button" onclick="calculateDifference()">Calculate Difference</button>
         </form>
 
-        <div id="result"></div>
+        <div id="result" aria-live="polite"></div>
     </div>
 
     <script>
@@ -36,7 +36,7 @@
         function addFormula(type) {
             const container = document.getElementById(`${type}FormulaContainer`);
             const newFormula = createFormulaSection(type, window[`${type}FormulaCount`]);
-            container.appendChild(newFormula);
+            container.insertAdjacentHTML('beforeend', newFormula);
             window[`${type}FormulaCount`]++;
         }
 
@@ -118,14 +118,21 @@
         // Calculate the difference between current and destination formulas
         function calculateDifference() {
             let resultText = '<h2>Difference</h2>';
-
             let currentFormulas = getFormulas('current');
             let destinationFormulas = getFormulas('destination');
+            let hasError = false;
 
             for (let currentColor in currentFormulas) {
                 if (destinationFormulas.hasOwnProperty(currentColor)) {
                     let current = currentFormulas[currentColor];
                     let destination = destinationFormulas[currentColor];
+
+                    // Validation to avoid empty entries
+                    if (current.OZ === 0 && current[32] === 0 && current[64] === 0 && current[128] === 0) {
+                        resultText += `<p style="color: red;">Error: Please enter valid amounts for ${currentColor}</p>`;
+                        hasError = true;
+                        continue;
+                    }
 
                     let currentTotal128 = convertTo128Units(current.OZ, current[32], current[64], current[128]);
                     let destinationTotal128 = convertTo128Units(destination.OZ, destination[32], destination[64], destination[128]);
@@ -151,7 +158,9 @@
                 }
             }
 
-            document.getElementById('result').innerHTML = resultText;
+            if (!hasError) {
+                document.getElementById('result').innerHTML = resultText;
+            }
         }
     </script>
 </body>
